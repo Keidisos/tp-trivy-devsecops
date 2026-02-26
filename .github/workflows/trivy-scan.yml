@@ -1,0 +1,23 @@
+name: Scan de Sécurité Trivy
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Build de l'image Docker
+        run: docker build -t ma-super-app:${{ github.sha }} .
+
+      - name: Scan Trivy (Affiche le tableau)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'ma-super-app:${{ github.sha }}'
+          format: 'table'
+          exit-code: '1'
+          severity: 'CRITICAL,HIGH'
